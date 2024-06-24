@@ -173,17 +173,13 @@ describe('Update', function() {
   // Create a test issue before running update tests
   before(function(done) {
     chai.request(server)
-      .post('/api/issues/test-project')
-      .send({
-        issue_title: 'Test Issue',
-        issue_text: 'This is a test issue for update testing',
-        created_by: 'Test User'
-      })
+      .get('/api/issues/test-project?')
       .end(function(err, res) {
         assert.equal(res.status, 200);
         assert.isObject(res.body);
         assert.property(res.body, '_id');
-        testIssueId = res.body._id;// Store the _id of the created issue
+        testIssueId = res.body._id;
+        console.log      // Store the _id of the created issue
         done();
       });
   });
