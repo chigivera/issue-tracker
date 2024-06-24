@@ -66,19 +66,19 @@ const updateIssue = async (req, res) => {
 
   // Validate _id format
   if (!mongoose.isValidObjectId(_id)) {
-    return res.status(400).json({ error: 'invalid _id format' });
+    return res.json({ error: 'invalid _id format' });
   }
 
   // Check if no updates are provided
   if (Object.keys(updates).length === 0) {
-    return res.status(400).json({ error: 'no update field(s) sent', _id });
+    return res.json({ error: 'no update field(s) sent', _id });
   }
 
   try {
     // Find the issue document
     const issue = await Issue.findOne({ _id, project });
     if (!issue) {
-      return res.status(404).json({ error: 'could not update', _id });
+      return res.json({ error: 'could not update', _id });
     }
 
     // Update the document and set updated_on to current time
@@ -91,7 +91,7 @@ const updateIssue = async (req, res) => {
     return res.json({ result: 'successfully updated', _id });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error: 'could not update', _id });
+    return res.json({ error: 'could not update', _id });
   }
 };
 
