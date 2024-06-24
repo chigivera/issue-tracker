@@ -53,11 +53,10 @@ const viewIssues = async (req, res) => {
 
 const updateIssue = async (req, res) => {
   const { project } = req.params; // Correctly extracting project from params
-  const _id  = req.query._id; // Assuming _id is intended to be in the query, adjust accordingly if it should be in the path
-  const {...updates } = req.body;
-  console.log(_id)
-  console.log({ project, _id,...updates });
 
+  let {_id,...updates } = req.body;
+  _id = _id || undefined;
+  console.log(_id)
   // Check if _id is missing
   if (!_id) {
     return res.status(400).json({ error: 'missing _id' });
