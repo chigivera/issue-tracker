@@ -28,6 +28,7 @@ const viewIssues = async (req, res) => {
   const filter = req.query;
   try {
     const issues = await Issue.find(filter);
+    console.log(issues)
     res.json(issues);
   } catch (error) {
     res.json({ error: 'could not retrieve issues' });
