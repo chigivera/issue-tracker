@@ -167,14 +167,195 @@ suite('Functional Tests', function() {
         done();
       });
   });
- 
-  // Update one field on an issue: PUT request to /api/issues/{project}
-  // Update multiple fields on an issue: PUT request to /api/issues/{project}
-  // Update an issue with missing _id: PUT request to /api/issues/{project}
-  // Update an issue with no fields to update: PUT request to /api/issues/{project}
-  // Update an issue with an invalid _id: PUT request to /api/issues/{project}
-  // Delete an issue: DELETE request to /api/issues/{project}
-  // Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
-  // Delete an issue with missing _id: DELETE request to /api/issues/{project}
+ // Update one field on an issue: PUT request to /api/issues/{project}
+test('should update with one field', function(done) {
+  chai
+    .request(server)
+    .post('/api/issues/test-project')
+    .send({
+      issue_title: 'Update Test',
+      issue_text: 'Update test issue text',
+      created_by: 'Update Test User'
+    })
+    .end(function(err, res) {
+      const issueId = res.body._id;
+      chai
+        .request(server)
+        .put('/api/issues/test-project')
+        .send({
+          _id: issueId,
+          status_text: 'In Progress'
+        })
+        .end(function(err, res) {
+          assert.equal(res.status, 200);
+          assert.isObject(res.body);
+          assert.property(res.body, 'result');
+          assert.property(res.body, '_id');
+          assert.equal(res.body.result, 'successfully updated');
+          assert.equal(res.body._id, issueId);
+          done();
+        });
+    });
+});
+
+// Update multiple fields on an issue: PUT request to /api/issues/{project}
+test('should update with multiple fields', function(done) {
+  chai
+    .request(server)
+    .post('/api/issues/test-project')
+    .send({
+      issue_title: 'Update Test',
+      issue_text: 'Update test issue text',
+      created_by: 'Update Test User'
+    })
+    .end(function(err, res) {
+      const issueId = res.body._id;
+      chai
+        .request(server)
+        .put('/api/issues/test-project')
+        .send({
+          _id: issueId,
+          status_text: 'In Progress',
+          assigned_to: 'John Doe'
+        })
+        .end(function(err, res) {
+          assert.equal(res.status, 200);
+          assert.isObject(res.body);
+          assert.property(res.body, 'result');
+          assert.property(res.body, '_id');
+          assert.equal(res.body.result, 'successfully updated');
+          assert.equal(res.body._id, issueId);
+          done();
+        });
+    });
+});
+
+// Update an issue with missing _id: PUT request to /api/issues/{project}
+test('should return an error when _id is missing', function(done) {
+  chai
+    .request(server)
+    .put('/api/issues/test-project')
+    .send({
+      status_text: 'In Progress'
+    })
+    .end(function(err, res) {
+      assert.equal(res.status, 400);
+      assert.isObject(res.body);
+      assert.property(res.body, 'error');
+      assert.equal(res.body.error, 'missing _id');
+      done();
+    });
+});
+
+// Update an issue with no fields to update: PUT request to /api/issues/{project}
+test('should return an error when no update fields are sent', function(done) {
+  chai
+    .request(server)
+    .post('/api/issues/test-project')
+    .send({
+      issue_title: 'Update Test',
+      issue_text: 'Update test issue text',
+      created_by: 'Update Test User'
+    })
+    .end(function(err, res) {
+      const issueId = res.body._id;
+      chai
+        .request(server)
+        .put('/api/issues/test-project')
+        .send({
+          _id: issueId
+        })
+        .end(function(err, res) {
+          assert.equal(res.status, 400);
+          assert.isObject(res.body);
+          assert.property(res.body, 'error');
+          assert.equal(res.body.error, 'no update field(s) sent');
+          assert.property(res.body, '_id');
+          assert.equal(res.body._id, issueId);
+          done();
+        });
+    });
+});
+
+// Update an issue with an invalid _id: PUT request to /api/issues/{project}
+test('should return an error when _id is invalid', function(done) {
+  chai
+    .request(server)
+    .put('/api/issues/test-project')
+    .send({
+      _id: 'invalid_id',
+      status_text: 'In Progress'
+    })
+    .end(function(err, res) {
+      assert.equal(res.status, 400);
+      assert.isObject(res.body);
+      assert.property(res.body, 'error');
+      assert.equal(res.body.error, 'invalid _id format');
+      done();
+    });
+});
+
+// Delete an issue: DELETE request to /api/issues/{project}
+test('should delete an issue', function(done) {
+  chai
+    .request(server)
+    .post('/api/issues/test-project')
+    .send({
+      issue_title: 'Delete Test',
+      issue_text: 'Delete test issue text',
+      created_by: 'Delete Test User'
+    })
+    .end(function(err, res) {
+      const issueId = res.body._id;
+      chai
+        .request(server)
+        .delete('/api/issues/test-project')
+        .send({
+          _id: issueId
+        })
+        .end(function(err, res) {
+          assert.equal(res.status, 200);
+          assert.isObject(res.body);
+          assert.property(res.body, 'result');
+          assert.property(res.body, '_id');
+          assert.equal(res.body.result, 'successfully deleted');
+          assert.equal(res.body._id, issueId);
+          done();
+        });
+    });
+});
+
+// Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
+test('should return an error when _id is invalid', function(done) {
+  chai
+    .request(server)
+    .delete('/api/issues/test-project')
+    .send({
+      _id: 'invalid_id'
+    })
+    .end(function(err, res) {
+      assert.equal(res.status, 200);
+      assert.isObject(res.body);
+      assert.property(res.body, 'error');
+      assert.equal(res.body.error, 'could not delete');
+      assert.property(res.body, '_id');
+      assert.equal(res.body._id, 'invalid_id');
+      done();
+    });
+});
+
+// Delete an issue with missing _id: DELETE request to /api/issues/{project}
+test('should return an error when _id is missing', function(done) {
+  chai
+    .request(server)
+    .delete('/api/issues/test-project')
+    .end(function(err, res) {
+      assert.equal(res.status, 200);
+      assert.isObject(res.body);
+      assert.property(res.body, 'error');
+      assert.equal(res.body.error, 'missing _id');
+      done();
+    });
+});
 
 });
