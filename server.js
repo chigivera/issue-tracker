@@ -4,14 +4,11 @@ const express     = require('express');
 const bodyParser  = require('body-parser');
 const expect      = require('chai').expect;
 const cors        = require('cors');
-const mongoose = require('mongoose')
-const { ObjectID } = require('mongodb')
 require('dotenv').config();
 
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
-const myDB = require('./connection');
 let app = express();
 
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -23,9 +20,6 @@ app.use(cors({origin: '*'})); //For FCC testing purposes only
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-//Sample front-end
-myDB(async client => {
-  const myDataBase = await client.db('database').collection('users');
 
   // Be sure to change the title
  app.route('/:project/')
@@ -39,15 +33,8 @@ app.route('/')
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
-  // Serialization and deserialization here...
 
-  // Be sure to add this...
-}).catch(e => {
-  app.route('/').get((req, res) => {
-        res.send('unable to connect');
 
-  });
-});
 
 
 
