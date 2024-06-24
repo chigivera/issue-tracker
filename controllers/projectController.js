@@ -54,13 +54,15 @@ const viewIssues = async (req, res) => {
 const updateIssue = async (req, res) => {
   const { project } = req.params; // Correctly extracting project from params
 
-  let {_id,...updates } = req.body;
-  _id = _id || undefined;
+  const {_id,...updates } = req.body ||{};
+  
   console.log(_id)
   // Check if _id is missing
   if (!_id) {
-    return res.status(400).json({ error: 'missing _id' });
+    console.log('fuck')
+    return res.json({ error: 'missing _id' });
   }
+  console.log("After return statement");
 
   // Validate _id format
   if (!mongoose.isValidObjectId(_id)) {
