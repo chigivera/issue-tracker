@@ -71,6 +71,21 @@ suite('Functional Tests', function() {
       });
   });
   // Create an issue with missing required fields: POST request to /api/issues/{project}
+  test('should return an error when required fields are missing', function(done) {
+    chai
+      .request(server)
+      .post('/api/issues/test-project')
+      .send({
+        // Missing issue_title, issue_text, and created_by
+      })
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.isObject(res.body);
+        assert.property(res.body, 'error');
+        assert.equal(res.body.error, 'required field(s) missing');
+        done();
+      });
+  });
   // View issues on a project: GET request to /api/issues/{project}
   // View issues on a project with one filter: GET request to /api/issues/{project}
   // View issues on a project with multiple filters: GET request to /api/issues/{project}
