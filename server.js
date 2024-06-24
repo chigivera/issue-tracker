@@ -11,7 +11,7 @@ require('dotenv').config();
 const apiRoutes         = require('./routes/api.js');
 const fccTestingRoutes  = require('./routes/fcctesting.js');
 const runner            = require('./test-runner');
-
+const myDB = require('./connection');
 let app = express();
 
 app.use('/public', express.static(process.cwd() + '/public'));
@@ -24,7 +24,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 //Sample front-end
-app.route('/:project/')
+myDB(async client => {
+  const myDataBase = await client.db('database').collection('users');
+
+  // Be sure to change the title
+ app.route('/:project/')
   .get(function (req, res) {
     res.sendFile(process.cwd() + '/views/issue.html');
   });
@@ -34,6 +38,18 @@ app.route('/')
   .get(function (req, res) {
     res.sendFile(process.cwd() + '/views/index.html');
   });
+
+  // Serialization and deserialization here...
+
+  // Be sure to add this...
+}).catch(e => {
+  app.route('/').get((req, res) => {
+        res.send('unable to connect');
+
+  });
+});
+
+
 
 //For FCC testing purposes
 fccTestingRoutes(app);
