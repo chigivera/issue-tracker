@@ -9,7 +9,9 @@ const issueSchema = new Schema({
   status_text: { type: String, default: '' },
   created_on: { type: Date, default: Date.now },
   updated_on: { type: Date, default: Date.now },
-  open: { type: Boolean, default: true }
+  open: { type: Boolean, default: true },
+  project: String
+
 });
 
 module.exports = mongoose.model('Issue', issueSchema);
