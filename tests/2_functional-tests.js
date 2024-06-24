@@ -87,6 +87,28 @@ suite('Functional Tests', function() {
       });
   });
   // View issues on a project: GET request to /api/issues/{project}
+  test('should get issues for a project', function(done) {
+    chai
+      .request(server)
+      .get('/api/issues/test-project')
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.isArray(res.body);
+        res.body.forEach(issue => {
+          assert.isObject(issue);
+          assert.property(issue, 'issue_title');
+          assert.property(issue, 'issue_text');
+          assert.property(issue, 'created_by');
+          assert.property(issue, 'assigned_to');
+          assert.property(issue, 'status_text');
+          assert.property(issue, 'created_on');
+          assert.property(issue, 'updated_on');
+          assert.property(issue, 'open');
+          assert.property(issue, '_id');
+        });
+        done();
+      });
+  });
   // View issues on a project with one filter: GET request to /api/issues/{project}
   // View issues on a project with multiple filters: GET request to /api/issues/{project}
   // Update one field on an issue: PUT request to /api/issues/{project}
