@@ -2,8 +2,9 @@ const Issue = require('../models/Issue');
 const mongoose = require('mongoose')
 const createIssue = async (req, res) => {
   const { project } = req.params;
+  console.log(project)
   const { issue_title, issue_text, created_by, assigned_to, status_text } = req.body;
-
+  console.log(req.body)
   // Check if required fields are present
   if (!issue_title || !issue_text || !created_by) {
     return res.json({ error: 'required field(s) missing' });
@@ -39,7 +40,7 @@ const viewIssues = async (req, res) => {
   const filter = req.query;
   try {
     const issues = await Issue.find(filter);
-    console.log(issues)
+    console.log(issues.length)
     res.json(issues);
   } catch (error) {
     res.json({ error: 'could not retrieve issues' });
