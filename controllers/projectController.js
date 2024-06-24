@@ -11,10 +11,10 @@ const createIssue = async (req, res) => {
 
   try {
     // Check if an issue with the same title, created_by, and project already exists
-    const existingIssue = await Issue.findOne({ issue_title,issue_text, created_by, project });
-    if (existingIssue) {
-      return res.json({ error: 'An issue with the same title and creator already exists' });
-    }
+    // const existingIssue = await Issue.findOne({ issue_title,issue_text, created_by, project });
+    // if (existingIssue) {
+    //   return res.json({ error: 'An issue with the same title and creator already exists' });
+    // }
 
     // Create a new issue
     const newIssue = new Issue({
@@ -40,7 +40,7 @@ const viewIssues = async (req, res) => {
   try {
     let issues;
     if (Object.keys(query).length > 0) {
-      issues = await Issue.find(query);
+      issues = await Issue.find({...query});
     } else {
       issues = await Issue.find({ project });
     }
