@@ -26,7 +26,6 @@ const createIssue = async (req, res) => {
 const viewIssues = async (req, res) => {
   const { project } = req.params;
   const filter = req.query;
-  console.log(filter)
   try {
     const issues = await Issue.find(filter);
     console.log(issues)
