@@ -37,22 +37,33 @@ const viewIssues = async (req, res) => {
 const updateIssue = async (req, res) => {
   const { project } = req.params;
   const { _id, ...updates } = req.body;
+
   if (!_id) {
-    return res.json({ error: 'missing _id' });
+    return res.status(400).json({ error: 'missing _id' });
   }
+
   if (Object.keys(updates).length === 0) {
-    return res.json({ error: 'no update field(s) sent', '_id': _id });
+    return res.status(400).json({ error: 'no update field(s) sent', _id });
   }
+
   try {
-    const issue = await Issue.findByIdAndUpdate(_id, { ...updates, updated_on: new Date() }, { new: true });
+    const issue = await Issue.findByIdAndUpdate(
+      _id,
+      { ...updates, updated_on: new Date() },
+      { new: true }
+    );
+
     if (!issue) {
-      return res.json({ error: 'could not update', '_id': _id });
+      return res.status(404).json({ error: 'could not update', _id });
     }
-    res.json({ result: 'successfully updated', '_id': _id });
+
+    return res.json({ result: 'successfully updated', _id });
   } catch (error) {
-    res.json({ error: 'could not update', '_id': _id });
+    console.error(error);
+    return res.status(500).json({ error: 'could not update', _id });
   }
 };
+
 
 const deleteIssue = async (req, res) => {
   const { project } = req.params;
