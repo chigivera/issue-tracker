@@ -36,17 +36,21 @@ const createIssue = async (req, res) => {
 
 const viewIssues = async (req, res) => {
   const { project } = req.params;
-  const filter = { ...req.query };
-  console.log(filter)
+  const query = req.query;
   try {
-    // If there are query parameters, use them to filter the issues
-    const issues = await req.query? Issue.find(filter) : Issue.find({ project });
-    console.log(issues)
+    let issues;
+    if (Object.keys(query).length > 0) {
+      issues = await Issue.find(query);
+    } else {
+      issues = await Issue.find({ project });
+    }
+    console.log(query, issues.length);
     res.json(issues);
   } catch (error) {
     res.json({ error: 'could not retrieve issues' });
   }
 };
+
 
 const updateIssue = async (req, res) => {
   const { project } = req.params;
