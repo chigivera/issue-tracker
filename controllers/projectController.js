@@ -44,7 +44,6 @@ const viewIssues = async (req, res) => {
     } else {
       issues = await Issue.find({ project });
     }
-    console.log(query, issues.length);
     res.json(issues);
   } catch (error) {
     res.json({ error: 'could not retrieve issues' });
@@ -54,9 +53,11 @@ const viewIssues = async (req, res) => {
 
 const updateIssue = async (req, res) => {
   const { project } = req.params;
-  const { _id, ...updates } = req.body;
-  if(!_id) {
-    return res.status(400).json({error:'missing _id'})
+  const {_id} = req.query
+  const {...updates } = req.body;
+  console.log({project,_id,...updates})
+  if(_id===undefined) {
+    return res.status(400).json({error: 'missing _id'})
   }
   // Validate _id before proceeding
   if (!mongoose.isValidObjectId(_id)) {
