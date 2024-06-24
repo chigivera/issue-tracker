@@ -11,7 +11,7 @@ const createIssue = async (req, res) => {
 
   try {
     // Check if an issue with the same title, created_by, and project already exists
-    const existingIssue = await Issue.findOne({ issue_title, created_by, project });
+    const existingIssue = await Issue.findOne({ issue_title,issue_text, created_by, project });
     if (existingIssue) {
       return res.json({ error: 'An issue with the same title and creator already exists' });
     }
