@@ -52,31 +52,39 @@ const viewIssues = async (req, res) => {
 
 
 const updateIssue = async (req, res) => {
-  const { project } = req.params;
-  const {_id} = req.query
+  const { project } = req.params; // Correctly extracting project from params
+  const _id  = req.query._id; // Assuming _id is intended to be in the query, adjust accordingly if it should be in the path
   const {...updates } = req.body;
-  console.log({project,_id,...updates})
-  if(_id===undefined) {
-    return res.status(400).json({error: 'missing _id'})
+  console.log(_id)
+  console.log({ project, _id,...updates });
+
+  // Check if _id is missing
+  if (!_id) {
+    return res.status(400).json({ error: 'missing _id' });
   }
-  // Validate _id before proceeding
+
+  // Validate _id format
   if (!mongoose.isValidObjectId(_id)) {
     return res.status(400).json({ error: 'invalid _id format' });
   }
 
+  // Check if no updates are provided
   if (Object.keys(updates).length === 0) {
     return res.status(400).json({ error: 'no update field(s) sent', _id });
   }
 
   try {
+    // Find the issue document
     const issue = await Issue.findOne({ _id, project });
     if (!issue) {
       return res.status(404).json({ error: 'could not update', _id });
     }
 
+    // Update the document and set updated_on to current time
     await Issue.findByIdAndUpdate(
       _id,
-      { ...updates, updated_on: new Date() }
+      {...updates, updated_on: new Date() },
+      { new: true } // Optional: Return the updated document
     );
 
     return res.json({ result: 'successfully updated', _id });
@@ -85,7 +93,6 @@ const updateIssue = async (req, res) => {
     return res.status(500).json({ error: 'could not update', _id });
   }
 };
-
 
 const deleteIssue = async (req, res) => {
   const { project } = req.params;
