@@ -167,7 +167,7 @@ suite('Functional Tests', function() {
         done();
       });
   });
-describe('Issue Tracker', function() {
+describe('Update', function() {
   let testIssueId; // This will store the _id of the test issue created for testing purposes
 
   // Create a test issue before running update tests
@@ -183,7 +183,7 @@ describe('Issue Tracker', function() {
         assert.equal(res.status, 200);
         assert.isObject(res.body);
         assert.property(res.body, '_id');
-        testIssueId = res.body._id; // Store the _id of the created issue
+        testIssueId = res.body._id;// Store the _id of the created issue
         done();
       });
   });
@@ -310,9 +310,7 @@ describe('Issue Tracker', function() {
         assert.equal(res.status, 400); // Assuming 400 Bad Request is returned for invalid _id
         assert.isObject(res.body);
         assert.property(res.body, 'error');
-        assert.equal(res.body.error, 'could not update');
-        assert.property(res.body, '_id');
-        assert.equal(res.body._id, 'invalid_id'); // Check if the invalid _id is returned
+        assert.equal(res.body.error, 'invalid _id format');
         done();
       });
   });
@@ -333,6 +331,7 @@ describe('Issue Tracker', function() {
       });
   });
 });
+
   // Delete an issue: DELETE request to /api/issues/{project}
   // Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
   // Delete an issue with missing _id: DELETE request to /api/issues/{project}

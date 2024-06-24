@@ -1,5 +1,5 @@
 const Issue = require('../models/Issue');
-
+const mongoose = require('mongoose')
 const createIssue = async (req, res) => {
   const { project } = req.params;
   const { issue_title, issue_text, created_by, assigned_to, status_text } = req.body;
@@ -38,8 +38,9 @@ const updateIssue = async (req, res) => {
   const { project } = req.params;
   const { _id, ...updates } = req.body;
 
-  if (!_id) {
-    return res.status(400).json({ error: 'missing _id' });
+  // Validate _id before proceeding
+  if (!mongoose.isValidObjectId(_id)) {
+    return res.status(400).json({ error: 'invalid _id format' });
   }
 
   if (Object.keys(updates).length === 0) {
@@ -63,7 +64,6 @@ const updateIssue = async (req, res) => {
     return res.status(500).json({ error: 'could not update', _id });
   }
 };
-
 
 const deleteIssue = async (req, res) => {
   const { project } = req.params;
