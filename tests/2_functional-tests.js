@@ -167,11 +167,9 @@ suite('Functional Tests', function() {
         done();
       });
   });
+let testIssueId; // This will store the _id of the test issue created for testing purposes
 
-  // Update one field on an issue: PUT request to /api/issues/{project}
-  let testIssueId; // This will store the _id of the test issue created for testing purposes
-
-  // Create a test issue before the tests run
+  // Create a test issue before running update tests
   before(function(done) {
     chai.request(server)
       .post('/api/issues/test-project')
@@ -222,7 +220,103 @@ suite('Functional Tests', function() {
       });
   });
 
-  // Clean up: Delete the test issue after tests
+  // Update multiple fields on an issue: PUT request to /api/issues/{project}
+  test('should update multiple fields on an issue', function(done) {
+    const updateData = {
+      _id: testIssueId,
+      issue_text: 'Updated issue text',
+      assigned_to: 'John Doe',
+      status_text: 'In Progress'
+    };
+
+    chai.request(server)
+      .put(`/api/issues/test-project`)
+      .send(updateData)
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.isObject(res.body);
+        assert.property(res.body, 'result');
+        assert.property(res.body, '_id');
+        assert.equal(res.body.result, 'successfully updated');
+        assert.equal(res.body._id, testIssueId);
+
+        // Check if the issue was actually updated by fetching it again
+        chai.request(server)
+          .get(`/api/issues/test-project`)
+          .query({ _id: testIssueId })
+          .end(function(err, res) {
+            assert.equal(res.status, 200);
+            assert.isArray(res.body);
+            assert.lengthOf(res.body, 1); // Expecting one issue with the given _id
+            const updatedIssue = res.body[0];
+            assert.equal(updatedIssue.issue_text, 'Updated issue text');
+            assert.equal(updatedIssue.assigned_to, 'John Doe');
+            assert.equal(updatedIssue.status_text, 'In Progress');
+            done();
+          });
+      });
+  });
+
+  // Update an issue with missing _id: PUT request to /api/issues/{project}
+  test('should return error when updating issue with missing _id', function(done) {
+    const updateData = {
+      issue_text: 'Updated issue text'
+    };
+
+    chai.request(server)
+      .put(`/api/issues/test-project`)
+      .send(updateData)
+      .end(function(err, res) {
+        assert.equal(res.status, 400); // Assuming 400 Bad Request is returned for missing _id
+        assert.isObject(res.body);
+        assert.property(res.body, 'error');
+        assert.equal(res.body.error, 'missing _id');
+        done();
+      });
+  });
+
+  // Update an issue with no fields to update: PUT request to /api/issues/{project}
+  test('should return error when updating issue with no fields to update', function(done) {
+    const updateData = {
+      _id: testIssueId // Valid _id, but no fields to update
+    };
+
+    chai.request(server)
+      .put(`/api/issues/test-project`)
+      .send(updateData)
+      .end(function(err, res) {
+        assert.equal(res.status, 400); // Assuming 400 Bad Request is returned for no fields to update
+        assert.isObject(res.body);
+        assert.property(res.body, 'error');
+        assert.equal(res.body.error, 'no update field(s) sent');
+        assert.property(res.body, '_id');
+        assert.equal(res.body._id, testIssueId);
+        done();
+      });
+  });
+
+  // Update an issue with an invalid _id: PUT request to /api/issues/{project}
+  test('should return error when updating issue with an invalid _id', function(done) {
+    const updateData = {
+      _id: 'invalid_id',
+      issue_text: 'Updated issue text'
+    };
+
+    chai.request(server)
+      .put(`/api/issues/test-project`)
+      .send(updateData)
+      .end(function(err, res) {
+        assert.equal(res.status, 400); // Assuming 400 Bad Request is returned for invalid _id
+        assert.isObject(res.body);
+        assert.property(res.body, 'error');
+        assert.equal(res.body.error, 'could not update');
+        assert.property(res.body, '_id');
+        assert.equal(res.body._id, 'invalid_id'); // Check if the invalid _id is returned
+        done();
+      });
+  });
+
+  // Clean up: Delete the test issue after all tests
   after(function(done) {
     chai.request(server)
       .delete(`/api/issues/test-project`)
@@ -237,10 +331,6 @@ suite('Functional Tests', function() {
         done();
       });
   });
-  // Update multiple fields on an issue: PUT request to /api/issues/{project}
-  // Update an issue with missing _id: PUT request to /api/issues/{project}
-  // Update an issue with no fields to update: PUT request to /api/issues/{project}
-  // Update an issue with an invalid _id: PUT request to /api/issues/{project}
   // Delete an issue: DELETE request to /api/issues/{project}
   // Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
   // Delete an issue with missing _id: DELETE request to /api/issues/{project}
