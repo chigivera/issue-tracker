@@ -6,5 +6,7 @@ const server = require('../server');
 chai.use(chaiHttp);
 
 suite('Functional Tests', function() {
-  
+  test('should create an issue with every field', function(done) {
+    
+  });
 });
