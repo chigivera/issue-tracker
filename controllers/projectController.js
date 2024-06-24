@@ -56,13 +56,10 @@ const updateIssue = async (req, res) => {
 
   const {_id,...updates } = req.body ||{};
   
-  console.log(_id)
   // Check if _id is missing
   if (!_id) {
-    console.log('fuck')
     return res.json({ error: 'missing _id' });
   }
-  console.log("After return statement");
 
   // Validate _id format
   if (!mongoose.isValidObjectId(_id)) {
@@ -90,7 +87,6 @@ const updateIssue = async (req, res) => {
 
     return res.json({ result: 'successfully updated', _id });
   } catch (error) {
-    console.error(error);
     return res.json({ error: 'could not update', _id });
   }
 };

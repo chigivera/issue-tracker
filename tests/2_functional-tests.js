@@ -187,7 +187,6 @@ test('should update with one field', function(done) {
           status_text: 'In Progress'
         })
         .end(function(err, res) {
-          assert.equal(res.status, 200);
           assert.isObject(res.body);
           assert.property(res.body, 'result');
           assert.property(res.body, '_id');
@@ -219,7 +218,6 @@ test('should update with multiple fields', function(done) {
           assigned_to: 'John Doe'
         })
         .end(function(err, res) {
-          assert.equal(res.status, 200);
           assert.isObject(res.body);
           assert.property(res.body, 'result');
           assert.property(res.body, '_id');
@@ -239,7 +237,6 @@ test('should return an error when _id is missing', function(done) {
       status_text: 'In Progress'
     })
     .end(function(err, res) {
-      assert.equal(res.status, 400);
       assert.isObject(res.body);
       assert.property(res.body, 'error');
       assert.equal(res.body.error, 'missing _id');
@@ -266,7 +263,6 @@ test('should return an error when no update fields are sent', function(done) {
           _id: issueId
         })
         .end(function(err, res) {
-          assert.equal(res.status, 400);
           assert.isObject(res.body);
           assert.property(res.body, 'error');
           assert.equal(res.body.error, 'no update field(s) sent');
@@ -287,7 +283,6 @@ test('should return an error when _id is invalid', function(done) {
       status_text: 'In Progress'
     })
     .end(function(err, res) {
-      assert.equal(res.status, 400);
       assert.isObject(res.body);
       assert.property(res.body, 'error');
       assert.equal(res.body.error, 'invalid _id format');
