@@ -137,6 +137,37 @@ suite('Functional Tests', function() {
       });
   });
   // View issues on a project with multiple filters: GET request to /api/issues/{project}
+  test('should get issues for a project with multiple filters', function(done) {
+    const project = 'test-project';
+    const filters = {
+      status_text: 'In Progress',
+      assigned_to: 'John Doe'
+    };
+
+    chai.request(server)
+      .get(`/api/issues/${project}`)
+      .query(filters)
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.isArray(res.body);
+        res.body.forEach(issue => {
+          assert.isObject(issue);
+          assert.property(issue, 'issue_title');
+          assert.property(issue, 'issue_text');
+          assert.property(issue, 'created_by');
+          assert.property(issue, 'assigned_to');
+          assert.property(issue, 'status_text');
+          assert.property(issue, 'created_on');
+          assert.property(issue, 'updated_on');
+          assert.property(issue, 'open');
+          assert.property(issue, '_id');
+          assert.equal(issue.status_text, filters.status_text);
+          assert.equal(issue.assigned_to, filters.assigned_to);
+        });
+        done();
+      });
+  });
+
   // Update one field on an issue: PUT request to /api/issues/{project}
   // Update multiple fields on an issue: PUT request to /api/issues/{project}
   // Update an issue with missing _id: PUT request to /api/issues/{project}
