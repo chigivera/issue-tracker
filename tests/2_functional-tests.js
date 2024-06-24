@@ -169,6 +169,74 @@ suite('Functional Tests', function() {
   });
 
   // Update one field on an issue: PUT request to /api/issues/{project}
+  let testIssueId; // This will store the _id of the test issue created for testing purposes
+
+  // Create a test issue before the tests run
+  before(function(done) {
+    chai.request(server)
+      .post('/api/issues/test-project')
+      .send({
+        issue_title: 'Test Issue',
+        issue_text: 'This is a test issue for update testing',
+        created_by: 'Test User'
+      })
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.isObject(res.body);
+        assert.property(res.body, '_id');
+        testIssueId = res.body._id; // Store the _id of the created issue
+        done();
+      });
+  });
+
+  // Update one field on an issue: PUT request to /api/issues/{project}
+  test('should update one field on an issue', function(done) {
+    const updateData = {
+      _id: testIssueId,
+      issue_text: 'Updated issue text'
+    };
+
+    chai.request(server)
+      .put(`/api/issues/test-project`)
+      .send(updateData)
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.isObject(res.body);
+        assert.property(res.body, 'result');
+        assert.property(res.body, '_id');
+        assert.equal(res.body.result, 'successfully updated');
+        assert.equal(res.body._id, testIssueId);
+
+        // Check if the issue was actually updated by fetching it again
+        chai.request(server)
+          .get(`/api/issues/test-project`)
+          .query({ _id: testIssueId })
+          .end(function(err, res) {
+            assert.equal(res.status, 200);
+            assert.isArray(res.body);
+            assert.lengthOf(res.body, 1); // Expecting one issue with the given _id
+            const updatedIssue = res.body[0];
+            assert.equal(updatedIssue.issue_text, 'Updated issue text');
+            done();
+          });
+      });
+  });
+
+  // Clean up: Delete the test issue after tests
+  after(function(done) {
+    chai.request(server)
+      .delete(`/api/issues/test-project`)
+      .send({ _id: testIssueId })
+      .end(function(err, res) {
+        assert.equal(res.status, 200);
+        assert.isObject(res.body);
+        assert.property(res.body, 'result');
+        assert.property(res.body, '_id');
+        assert.equal(res.body.result, 'successfully deleted');
+        assert.equal(res.body._id, testIssueId);
+        done();
+      });
+  });
   // Update multiple fields on an issue: PUT request to /api/issues/{project}
   // Update an issue with missing _id: PUT request to /api/issues/{project}
   // Update an issue with no fields to update: PUT request to /api/issues/{project}
