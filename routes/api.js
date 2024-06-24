@@ -1,27 +1,15 @@
 'use strict';
-
+const {createIssue,viewIssues,updateIssue,deleteIssue} = require('../controllers/projectController')
 module.exports = function (app) {
 
   app.route('/api/issues/:project')
   
-    .get(function (req, res){
-      let project = req.params.project;
-      
-    })
+    .get(viewIssues)
     
-    .post(function (req, res){
-      let project = req.params.project;
-      
-    })
+    .post(createIssue)
     
-    .put(function (req, res){
-      let project = req.params.project;
-      
-    })
+    .put(updateIssue)
     
-    .delete(function (req, res){
-      let project = req.params.project;
-      
-    });
+    .delete(deleteIssue);
     
 };
