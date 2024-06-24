@@ -55,7 +55,9 @@ const viewIssues = async (req, res) => {
 const updateIssue = async (req, res) => {
   const { project } = req.params;
   const { _id, ...updates } = req.body;
-
+  if(!_id) {
+    return res.status(400).json({error:'missing _id'})
+  }
   // Validate _id before proceeding
   if (!mongoose.isValidObjectId(_id)) {
     return res.status(400).json({ error: 'invalid _id format' });
