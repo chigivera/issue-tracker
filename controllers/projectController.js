@@ -50,8 +50,7 @@ const updateIssue = async (req, res) => {
   try {
     const issue = await Issue.findByIdAndUpdate(
       _id,
-      { ...updates, updated_on: new Date() },
-      { new: true }
+      { ...updates, updated_on: new Date() }
     );
 
     if (!issue) {

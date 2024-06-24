@@ -190,11 +190,13 @@ describe('Update', function() {
 
   // Update one field on an issue: PUT request to /api/issues/{project}
   test('should update one field on an issue', function(done) {
+          console.log(testIssueId)
+
     const updateData = {
       _id: testIssueId,
       issue_text: 'Updated issue text'
     };
-
+    
     chai.request(server)
       .put(`/api/issues/test-project`)
       .send(updateData)
@@ -219,9 +221,10 @@ describe('Update', function() {
       .put(`/api/issues/test-project`)
       .send(updateData)
       .end(function(err, res) {
+      console.log(res.body)
         assert.equal(res.status, 200);
         assert.isObject(res.body);
-   
+       done()
 
        
       });
