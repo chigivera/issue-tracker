@@ -167,7 +167,8 @@ suite('Functional Tests', function() {
         done();
       });
   });
-let testIssueId; // This will store the _id of the test issue created for testing purposes
+describe('Issue Tracker', function() {
+  let testIssueId; // This will store the _id of the test issue created for testing purposes
 
   // Create a test issue before running update tests
   before(function(done) {
@@ -331,6 +332,7 @@ let testIssueId; // This will store the _id of the test issue created for testin
         done();
       });
   });
+});
   // Delete an issue: DELETE request to /api/issues/{project}
   // Delete an issue with an invalid _id: DELETE request to /api/issues/{project}
   // Delete an issue with missing _id: DELETE request to /api/issues/{project}
