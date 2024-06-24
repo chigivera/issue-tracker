@@ -3,10 +3,20 @@ const mongoose = require('mongoose')
 const createIssue = async (req, res) => {
   const { project } = req.params;
   const { issue_title, issue_text, created_by, assigned_to, status_text } = req.body;
+
+  // Check if required fields are present
   if (!issue_title || !issue_text || !created_by) {
     return res.json({ error: 'required field(s) missing' });
   }
+
   try {
+    // Check if an issue with the same title and created_by already exists
+    const existingIssue = await Issue.findOne({ issue_title, created_by });
+    if (existingIssue) {
+      return res.json({ error: 'An issue with the same title and creator already exists' });
+    }
+
+    // Create a new issue
     const newIssue = new Issue({
       issue_title,
       issue_text,
@@ -22,6 +32,7 @@ const createIssue = async (req, res) => {
     res.json({ error: 'could not create issue' });
   }
 };
+
 
 const viewIssues = async (req, res) => {
   const { project } = req.params;
