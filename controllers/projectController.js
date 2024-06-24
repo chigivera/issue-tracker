@@ -34,13 +34,13 @@ const createIssue = async (req, res) => {
   }
 };
 
-
 const viewIssues = async (req, res) => {
   const { project } = req.params;
-  const filter = { ...req.query, project };
+  const filter = { ...req.query };
   console.log(filter)
   try {
-    const issues = await Issue.find(filter);
+    // If there are query parameters, use them to filter the issues
+    const issues = await req.query? Issue.find(filter) : Issue.find({ project });
     console.log(issues)
     res.json(issues);
   } catch (error) {
